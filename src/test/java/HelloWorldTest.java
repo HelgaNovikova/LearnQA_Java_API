@@ -10,7 +10,7 @@ import java.util.Map;
 public class HelloWorldTest {
 
     @Test
-    public void helloYou(){
+    public void helloYou() {
         Map<String, String> params = new HashMap<>();
         params.put("name", "Olia");
         Response response = RestAssured
@@ -21,17 +21,17 @@ public class HelloWorldTest {
     }
 
     @Test
-    public void ex5Test(){
+    public void ex5Test() {
         JsonPath response = RestAssured
                 .given()
                 .get("https://playground.learnqa.ru/api/get_json_homework")
-                        .jsonPath();
+                .jsonPath();
         String message = response.get("messages[1].message");
         System.out.println(message);
     }
 
     @Test
-    public void ex6Test(){
+    public void ex6Test() {
         Response response = RestAssured
                 .given()
                 .redirects()
@@ -39,5 +39,27 @@ public class HelloWorldTest {
                 .get("https://playground.learnqa.ru/api/long_redirect")
                 .andReturn();
         System.out.println(response.getHeader("location"));
+    }
+
+    @Test
+    public void ex7Test() {
+        int statusCode;
+        String location = "https://playground.learnqa.ru/api/long_redirect";
+        int numberOfRedirects = 0;
+        do {
+            Response response = RestAssured
+                    .given()
+                    .redirects()
+                    .follow(false)
+                    .get(location)
+                    .andReturn();
+            statusCode = response.getStatusCode();
+            if (statusCode != 200) {
+                numberOfRedirects++;
+                location = response.getHeader("location");
+            }
+        }
+        while (statusCode != 200);
+        System.out.println("numberOfRedirects = " + numberOfRedirects);
     }
 }
