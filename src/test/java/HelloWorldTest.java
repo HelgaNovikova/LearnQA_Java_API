@@ -33,8 +33,22 @@ public class HelloWorldTest {
     @Test
     public void ex6Test(){
         Response response = RestAssured
+                .given()
+                .redirects()
+                .follow(false)
                 .get("https://playground.learnqa.ru/api/long_redirect")
                 .andReturn();
-        System.out.println(response.getHeader("X-Host"));
+        System.out.println(response.getHeader("location"));
+    }
+
+    @Test
+    public void ex7Test(){
+        Response response = RestAssured
+                .given().redirects().follow(false)
+                .relaxedHTTPSValidation()
+                .get("https://playground.learnqa.ru/api/long_redirect")
+                .andReturn();
+        System.out.println(response.getHeaders());
+        System.out.println(response.getStatusCode());
     }
 }
