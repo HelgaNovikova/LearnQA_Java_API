@@ -30,4 +30,11 @@ public class HelloWorldTest {
         System.out.println(message);
     }
 
+    @Test
+    public void ex6Test(){
+        Response response = RestAssured
+                .get("https://playground.learnqa.ru/api/long_redirect")
+                .andReturn();
+        System.out.println(response.getHeader("X-Host"));
+    }
 }
