@@ -4,8 +4,9 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HelloWorldTest {
 
@@ -61,5 +62,43 @@ public class HelloWorldTest {
         }
         while (statusCode != 200);
         System.out.println("numberOfRedirects = " + numberOfRedirects);
+    }
+
+    @Test
+    public void ex8Test() throws InterruptedException {
+        JsonPath createTask = RestAssured
+                .given()
+                .redirects()
+                .follow(false)
+                .get("https://playground.learnqa.ru/ajax/api/longtime_job")
+                .jsonPath();
+        String token = createTask.get("token");
+        int seconds = createTask.get("seconds");
+
+        String statusBeforeWait = sendTaskRequest(token).get("status");
+        assertTrue(statusBeforeWait.equalsIgnoreCase("Job is NOT ready"));
+        Thread.sleep(seconds * 1000);
+        JsonPath getTask = sendTaskRequest(token);
+        String statusAfterWait = getTask.get("status");
+        assertTrue(statusAfterWait.equalsIgnoreCase("Job is ready"));
+        String result = "";
+        try{
+            result = getTask.get("result");
+        }
+        catch (IllegalArgumentException e){
+            System.out.println("Result field is not presented");
+        }
+        assertFalse(result.equals(""));
+    }
+
+    public JsonPath sendTaskRequest(String token){
+        Map<String, String> params = new HashMap<>();
+        params.put("token", token);
+        JsonPath getTask = RestAssured
+                .given()
+                .queryParams(params)
+                .get("https://playground.learnqa.ru/ajax/api/longtime_job")
+                .jsonPath();
+        return getTask;
     }
 }
