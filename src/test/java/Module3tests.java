@@ -28,4 +28,15 @@ public class Module3tests {
                 .andReturn();
         assertEquals("hw_value", requestForCookies.getCookie("HomeWork"), "cookie isn't correct");
     }
+
+    @Test
+    public void ex12Test() {
+        Response requestForHeaders = RestAssured
+                .given()
+                .redirects()
+                .follow(false)
+                .get("https://playground.learnqa.ru/api/homework_header")
+                .andReturn();
+        assertEquals("Some secret value", requestForHeaders.getHeader("x-secret-homework-header"), "header isn't correct");
+    }
 }
